@@ -10,7 +10,7 @@ while True:
 
     hsv = cv2.cvtColor(The_Thing, cv2.COLOR_BGR2HSV)
 
-    red_lower = np.array([136, 87, 111])
+    red_lower = np.array([148, 178, 111])
     red_higher = np.array([180, 255, 255])
     red_mask = cv2.inRange(hsv, red_lower, red_higher)
 
