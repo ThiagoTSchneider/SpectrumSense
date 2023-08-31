@@ -1,23 +1,23 @@
 import cv2
 import numpy as np
 
-web = cv2.VideoCapture(1)
+webcam = cv2.VideoCapture(1)
 
 while True:
-    ocoiso, The_Thing = web.read()
+    ret, frame = webcam.read()
 
-    cv2.imshow("Web Continuously", The_Thing)
+    cv2.imshow("Detecção de Cor Contínua", frame)
 
-    hsv = cv2.cvtColor(The_Thing, cv2.COLOR_BGR2HSV)
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     red_lower = np.array([148, 178, 111])
-    red_higher = np.array([180, 255, 255])
-    red_mask = cv2.inRange(hsv, red_lower, red_higher)
+    red_upper = np.array([180, 255, 255])
+    red_mask = cv2.inRange(hsv_frame, red_lower, red_upper)
 
-    COLOR_DETECTION = cv2.bitwise_and(The_Thing, The_Thing, mask=red_mask)
+    color_detected = cv2.bitwise_and(frame, frame, mask=red_mask)
 
-    Kernel = np.ones((5, 5), np.uint8)
-    red_dilation = cv2.dilate(The_Thing, Kernel, 1)
+    kernel = np.ones((5, 5), np.uint8)
+    red_dilation = cv2.dilate(frame, kernel, 1)
 
     contours, hierarchy = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -25,12 +25,12 @@ while True:
         area = cv2.contourArea(contour)
         if area > 1000:
             x, y, w, h = cv2.boundingRect(contour)
-            COLOR_DETECTION_IMAGE = cv2.rectangle(The_Thing, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(The_Thing, "Detected", (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
-            with open('area_data.txt', 'a') as AreaData:
-                AreaData.write(str(area) + '\n')
+            frame_with_rectangle = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, "Detectado", (x, y), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
+            with open('dados_de_area.txt', 'a') as arquivo_area:
+                arquivo_area.write(str(area) + '\n')
 
-            cv2.imshow("COLOR_DETECTION_VIDEO", COLOR_DETECTION_IMAGE)
+            cv2.imshow("Vídeo com Detecção de Cor", frame_with_rectangle)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
